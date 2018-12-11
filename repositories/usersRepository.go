@@ -13,13 +13,12 @@ type usersRepository struct {
 	users []models.User
 }
 
-/*repo.users = append(repo.users, models.User{"0", "FirstName", "LastName", &models.Address{"City", "State"}})
-return repo*/
-
 func NewUserRepository() Repository {
-	return &usersRepository{
+	instance := &usersRepository{
 		sequence: 1,
 	}
+	instance.users = append(instance.users, models.User{"0", "FirstName", "LastName", &models.Address{"City", "State"}})
+	return instance
 }
 
 func (r *usersRepository) Add(user *models.User) *models.User {
