@@ -13,54 +13,55 @@ type usersRepository struct {
 	users []models.User
 }
 
-func NewUserRepository() *usersRepository {
-	repo := &usersRepository{
+/*repo.users = append(repo.users, models.User{"0", "FirstName", "LastName", &models.Address{"City", "State"}})
+return repo*/
+
+func NewUserRepository() Repository {
+	return &usersRepository{
 		sequence: 1,
 	}
-	repo.users = append(repo.users, models.User{"0", "FirstName", "LastName", &models.Address{"City", "State"}})
-	return repo
 }
 
-func (r *usersRepository) add(user models.User) models.User {
+func (r *usersRepository) Add(user *models.User) *models.User {
 	log.Printf("Add User %v", user)
 	user.ID = strconv.Itoa(r.sequence)
 	r.sequence++
-	r.users = append(r.users, user)
+	r.users = append(r.users, *user)
 	return user
 }
 
-func (r *usersRepository) remove(ID string) (models.User, error) {
+func (r *usersRepository) Remove(ID string) (*models.User, error) {
 	log.Printf("Remove User %v", ID)
 	for index, u := range r.users {
 		if u.ID == ID {
 			r.users = append(r.users[:index], r.users[index+1:]...)
-			return u, nil
+			return &u, nil
 		}
 	}
-	return models.User{}, errors.New("NOT FOUND")
+	return &models.User{}, errors.New("NOT FOUND")
 }
 
-func (r *usersRepository) update(ID string, user models.User) (models.User, error) {
-	_, err := r.remove(ID)
+func (r *usersRepository) Update(ID string, user *models.User) (*models.User, error) {
+	_, err := r.Remove(ID)
 	if err != nil {
 		user.ID = ID
-		r.add(user)
+		r.Add(user)
 		return user, nil
 	}
-	return models.User{}, errors.New("NOT FOUND")
+	return &models.User{}, errors.New("NOT FOUND")
 }
 
-func (r *usersRepository) findByID(ID string) (models.User, error) {
+func (r *usersRepository) FindByID(ID string) (*models.User, error) {
 	log.Printf("Find User by ID %v", ID)
 	for _, u := range r.users {
 		if u.ID == ID {
-			return u, nil
+			return &u, nil
 		}
 	}
-	return models.User{}, errors.New("NOT FOUND")
+	return &models.User{}, errors.New("NOT FOUND")
 }
 
-func (r *usersRepository) findAll() []models.User {
+func (r *usersRepository) FindAll() *[]models.User {
 	log.Printf("Find All Users")
-	return r.users
+	return &r.users
 }
