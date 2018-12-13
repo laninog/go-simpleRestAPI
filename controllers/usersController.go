@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"gopkg.in/validator.v2"
 	"net/http"
 
 	"github.com/laninog/go-simpleRestAPI/models"
@@ -37,9 +38,14 @@ func (c *usersController) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *usersController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user *models.User
+	var user models.User
 	render.DecodeJSON(r.Body, &user)
-	user = c.repository.Add(user)
+	e := validator.Validate(user)
+	if e != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	c.repository.Add(&user)
 	w.Header().Add("location", r.RequestURI + "/" + user.ID)
 	w.WriteHeader(http.StatusCreated)
 }
