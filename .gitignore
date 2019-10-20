@@ -12,3 +12,4 @@
 *.out
 
 go_simple_rest_api
+.idea
